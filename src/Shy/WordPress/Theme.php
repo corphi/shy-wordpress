@@ -4,6 +4,11 @@ namespace Shy\WordPress;
 
 
 
+/**
+ * Boilerplate for themes.
+ * 
+ * @license GPL-2.0+
+ */
 abstract class Theme extends Plugin
 {
 	public function __construct()
@@ -11,8 +16,9 @@ abstract class Theme extends Plugin
 		$GLOBALS['content_width'] = $this->getContentWidth();
 	}
 
+
 	/**
-	 * @return integer
+	 * @return int
 	 */
 	abstract public function getContentWidth();
 }

@@ -7,8 +7,8 @@ namespace Shy\WordPress;
 /**
  * Abstracts common functionality and escaping for the Settings API.
  * 
- * TODO: Check slug and field names for illegal characters.
- * TODO: Refactor to not extend but use CompositeOption
+ * @deprecated
+ * @license GPL-2.0+
  */
 abstract class SettingsPage extends CompositeOption
 {
@@ -63,6 +63,11 @@ abstract class SettingsPage extends CompositeOption
 
 		$this->addHookMethod( 'admin_menu', 'registerPage' );
 		$this->addHookMethod( 'admin_init', 'registerSettings' );
+	}
+
+	public function __toString()
+	{
+		return $this->slug;
 	}
 
 	/**
@@ -145,9 +150,9 @@ abstract class SettingsPage extends CompositeOption
 	 * Teasers must escape their output themselves.
 	 * 
 	 * @param array $section {
-	 *    @type string   $id
-	 *    @type string   $title
-	 *    @type callable $callback
+	 *    @var string   $id
+	 *    @var string   $title
+	 *    @var callable $callback
 	 * }
 	 */
 	public function renderSectionTeaser( array $section )
@@ -175,10 +180,10 @@ abstract class SettingsPage extends CompositeOption
 	 * @global $wp_settings_fields
 	 * @param string $section
 	 * @return array<string, array {
-	 *    @type string   $id
-	 *    @type string   $title
-	 *    @type callable $callback
-	 *    @type array    $args
+	 *    @var string   $id
+	 *    @var string   $title
+	 *    @var callable $callback
+	 *    @var array    $args
 	 * }>
 	 */
 	public function getFieldsForSection( $section )
@@ -279,10 +284,10 @@ abstract class SettingsPage extends CompositeOption
 	 * Errors for this setting.
 	 * 
 	 * @return array {
-	 *    @type string $setting
-	 *    @type string $code
-	 *    @type string $message
-	 *    @type string $type 'error'
+	 *    @var string $setting
+	 *    @var string $code
+	 *    @var string $message
+	 *    @var string $type 'error'
 	 * }
 	 */
 	public function getErrors()
@@ -295,9 +300,9 @@ abstract class SettingsPage extends CompositeOption
 	 * Render a setting as text field.
 	 * 
 	 * @param array $args {
-	 *    @type string $name
-	 *    @type string $label_for
-	 *    @type array  $attr
+	 *    @var string $name
+	 *    @var string $label_for
+	 *    @var array  $attr
 	 * }
 	 */
 	public function renderTextField( array $args )
@@ -317,10 +322,10 @@ abstract class SettingsPage extends CompositeOption
 	 * Render a setting as checkbox.
 	 * 
 	 * @param array $args {
-	 *    @type string $caption
-	 *    @type string $name
-	 *    @type string $label_for
-	 *    @type array  $attr
+	 *    @var string $caption
+	 *    @var string $name
+	 *    @var string $label_for
+	 *    @var array  $attr
 	 * }
 	 */
 	public function renderCheckboxField( array $args )

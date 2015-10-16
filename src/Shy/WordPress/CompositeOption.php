@@ -6,6 +6,8 @@ namespace Shy\WordPress;
 
 /**
  * A composite option with a fixed number of suboptions and their default values.
+ * 
+ * @license GPL-2.0+
  */
 abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAggregate
 {
@@ -26,21 +28,37 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 	}
 
 
+	/**
+	 * @param string $slug
+	 */
 	protected function __construct( $slug )
 	{
 		$this->slug = (string) $slug;
 
 		$this->addHookMethod( 'default_option_' . $this->slug, 'getDefaults' );
+		$this->addHookMethod( 'option_' . $this->slug, 'filterOptionMergeDefaults' );
 	}
 
 
 	/**
 	 * Return default values for all suboptions.
 	 * Hooked into get_option() defaults.
-	 *
+	 * 
 	 * @return array
 	 */
 	abstract public function getDefaults();
+
+
+	/**
+	 * Merge default values if missing in database.
+	 * 
+	 * @param array $option
+	 * @return array
+	 */
+	public function filterOptionMergeDefaults( $option )
+	{
+		return (array) $option + $this->getDefaults();
+	}
 
 	/**
 	 * @param string $offset
@@ -55,6 +73,7 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 	public function offsetExists( $offset )
 	{
 		$settings = get_option( $this->slug );
+
 		return isset( $settings[ $offset ] );
 	}
 
@@ -81,18 +100,67 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 
 	public function offsetUnset( $offset )
 	{
-		throw new \BadMethodCallException( 'You cannot unset settings.' );
+		$settings = get_option( $this->slug );
+		unset( $settings[ $offset ] );
+
+		update_option( $this->slug, $settings );
 	}
 
 
 	public function count()
 	{
-		return count( $this->getDefaults() );
+		return count( get_option( $this->slug ) );
 	}
 
 
 	public function getIterator()
 	{
 		return new \ArrayIterator( get_option( $this->slug ) );
+	}
+
+
+	/**
+	 * Merge another set of options into this one.
+	 * 
+	 * @param array $settings
+	 * @param bool  $overwrite
+	 */
+	public function merge( array $settings, $overwrite = false )
+	{
+		if ( ! empty( $settings ) ) {
+			if ( $overwrite ) {
+				$settings = $settings + get_option( $this->slug, [] );
+			} else {
+				$settings = get_option( $this->slug, [] ) + $settings;
+			}
+
+			set_option( $this->slug, $settings );
+		}
+	}
+
+	/**
+	 * Remove all settings.
+	 * 
+	 * @return void
+	 */
+	public function clear()
+	{
+		delete_option( $this->slug );
+	}
+
+	/**
+	 * Remove all options that have no default values.
+	 * 
+	 * @return void
+	 */
+	public function clearNonDefault()
+	{
+		$defaults = $this->getDefaults();
+
+		$settings = get_option( $this->slug );
+		$settings = array_intersect_key( $settings, $defaults );
+		$settings = array_diff_assoc( $settings, $defaults );
+
+		set_option( $this->slug, $settings );
 	}
 }

@@ -4,7 +4,7 @@
  * Try to load a Shy WordPress class.
  * 
  * @param string $name
- * @return boolean
+ * @return bool
  */
 function shy_wordpress_autoloader( $name )
 {
@@ -12,7 +12,7 @@ function shy_wordpress_autoloader( $name )
 		return false;
 	}
 
-	$name = __DIR__ . '/' . str_replace( '\\', DIRECTORY_SEPARATOR, $name ) . '.php';
+	$name = __DIR__ . DIRECTORY_SEPARATOR . str_replace( '\\', DIRECTORY_SEPARATOR, $name ) . '.php';
 
 	return is_file( $name ) && include( $name );
 }

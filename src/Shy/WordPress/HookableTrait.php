@@ -8,6 +8,8 @@ namespace Shy\WordPress;
  * Making actions and filters how they should be.
  * 
  * Default to pass all arguments.
+ * 
+ * @license GPL-2.0+
  */
 trait HookableTrait
 {
@@ -19,7 +21,7 @@ trait HookableTrait
 	 */
 	protected function addHookMethod( $action_or_filter, $method, $priority = 10, $acceptedArgs = 99 )
 	{
-		add_filter( $action_or_filter, array( $this, $method ), $priority, $acceptedArgs );
+		add_filter( $action_or_filter, [ $this, $method ], $priority, $acceptedArgs );
 	}
 
 	/**
@@ -30,6 +32,6 @@ trait HookableTrait
 	 */
 	protected function removeHookMethod( $action_or_filter, $method, $priority = 10, $acceptedArgs = 99 )
 	{
-		remove_filter( $action_or_filter, array( $this, $method ), $priority, $acceptedArgs );
+		remove_filter( $action_or_filter, [ $this, $method ], $priority, $acceptedArgs );
 	}
 }
