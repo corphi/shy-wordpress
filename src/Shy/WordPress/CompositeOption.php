@@ -134,7 +134,7 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 				$settings = get_option( $this->slug, [] ) + $settings;
 			}
 
-			set_option( $this->slug, $settings );
+			update_option( $this->slug, $settings );
 		}
 	}
 
@@ -161,6 +161,6 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 		$settings = array_intersect_key( $settings, $defaults );
 		$settings = array_diff_assoc( $settings, $defaults );
 
-		set_option( $this->slug, $settings );
+		update_option( $this->slug, $settings );
 	}
 }
