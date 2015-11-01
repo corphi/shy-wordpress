@@ -5,7 +5,7 @@ namespace Shy\WordPress;
 
 
 /**
- * A composite option with a fixed number of suboptions and their default values.
+ * An array option with default values for its suboptions.
  * 
  * @license GPL-2.0+
  */
@@ -80,7 +80,7 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 	public function offsetGet( $offset )
 	{
 		$settings = get_option( $this->slug );
-		if ( ! isset( $settings[ $offset ] ) ) {
+		if ( ! isset( $settings[ $offset ] ) && ! array_key_exists( $offset, $settings ) ) {
 			throw new \OutOfBoundsException( "There is no setting '$offset'." );
 		}
 
@@ -90,10 +90,6 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 	public function offsetSet( $offset, $value )
 	{
 		$settings = get_option( $this->slug );
-		if ( ! isset( $settings[ $offset ] ) ) {
-			throw new \OutOfBoundsException( "There is no setting '$offset'." );
-		}
-
 		$settings[ $offset ] = $value;
 		update_option( $this->slug, $settings );
 	}
@@ -139,7 +135,7 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 	}
 
 	/**
-	 * Remove all settings.
+	 * Remove the entire option from the database.
 	 * 
 	 * @return void
 	 */
@@ -149,7 +145,7 @@ abstract class CompositeOption implements \ArrayAccess, \Countable, \IteratorAgg
 	}
 
 	/**
-	 * Remove all options that have no default values.
+	 * Remove all suboptions that have no default values.
 	 * 
 	 * @return void
 	 */
