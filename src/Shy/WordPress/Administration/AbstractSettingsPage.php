@@ -2,7 +2,7 @@
 
 namespace Shy\WordPress\Administration;
 
-use Shy\WordPress\CompositeOption;
+use Shy\WordPress\Settings;
 
 
 
@@ -14,7 +14,7 @@ use Shy\WordPress\CompositeOption;
 abstract class AbstractSettingsPage extends AbstractPage
 {
 	/**
-	 * @var CompositeOption
+	 * @var Settings
 	 */
 	protected $settings;
 
@@ -27,10 +27,10 @@ abstract class AbstractSettingsPage extends AbstractPage
 
 
 	/**
-	 * @param CompositeOption $settings
-	 * @param string          $slug     optional, use settings’ slug if omitted
+	 * @param Settings $settings
+	 * @param string   $slug     optional, use settings’ slug if omitted
 	 */
-	public function __construct( CompositeOption $settings, $slug = '' )
+	public function __construct( Settings $settings, $slug = '' )
 	{
 		$this->settings = $settings;
 
@@ -75,6 +75,10 @@ abstract class AbstractSettingsPage extends AbstractPage
 	 */
 	public function sanitizeSettings( $options )
 	{
+		if ( ! is_array( $options ) ) {
+			$options = [];
+		}
+
 		foreach ( $this->fields as $name => $field ) {
 			$value = isset( $options[ $name ] ) ? $options[ $name ] : null;
 			$value = $field->sanitizeValue(
@@ -195,12 +199,13 @@ abstract class AbstractSettingsPage extends AbstractPage
 
 			$args = [
 				'name'       => $name,
-				'input_name' => $this->slug . '[' . $name . ']',
+				'input_name' => $this->settings->getSlug() . '[' . $name . ']',
 				'value'      => $this->settings[ $name ],
 			] + $args + [
-				'label_for'  => $this->slug . '-' . $name,
+				'label_for'  => $this->settings->getSlug() . '-' . $name,
 				'attr'       => [],
 			];
+
 			$callback = [ $field, 'renderField' ];
 			$field    = $field->getLabel();
 		} elseif ( ! is_callable( $callback ) ) {
